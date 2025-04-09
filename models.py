@@ -1,7 +1,25 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_serializer import SerializerMixin
+from flask_login import UserMixin
+from flask_bcrypt import Bcrypt
 
 db = SQLAlchemy()
+
+class User(db.Model, SerializerMixin, UserMixin):
+    __tablename__ = 'users'
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password_hash = db.Column(db.String(128))
+
+    reviews = db.relationship('Review', backref='author', lazy=True)
+
+    def set_password(self, password):
+        self.password_hash = Bcrypt().generate_password_hash(password).decode('utf-8')
+
+    def check_password(self, password):
+        return Bcrypt().check_password_hash(self.password_hash, password)
 
 class Destination(db.Model, SerializerMixin):
     __tablename__ = 'destinations'
@@ -30,13 +48,16 @@ class Activity(db.Model, SerializerMixin):
 class Review(db.Model, SerializerMixin):
     __tablename__ = 'reviews'
     id = db.Column(db.Integer, primary_key=True)
-    rating = db.Column(db.Integer,)
+    rating = db.Column(db.Integer)
     comment = db.Column(db.Text)
-    user_name = db.Column(db.String(100), )
+    user_name = db.Column(db.String(100))
     destination_id = db.Column(db.Integer, db.ForeignKey('destinations.id'))
-    destination = db.relationship('Destination', back_populates='reviews')
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-    serialize_rules = ('-destination.reviews',)
+    destination = db.relationship('Destination', back_populates='reviews')
+    user = db.relationship('User', back_populates='reviews', overlaps="author,reviews")
+
+    serialize_rules = ('-destination.reviews', '-user.reviews')
 
 class DestinationActivity(db.Model, SerializerMixin):
     __tablename__ = 'destination_activities'

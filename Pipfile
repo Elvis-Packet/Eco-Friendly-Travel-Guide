@@ -8,6 +8,9 @@ flask = "*"
 flask-sqlalchemy = "*"
 sqlalchemy-serializer = "*"
 flask-migrate = "*"
+flask-login = "*"
+python-dotenv = "*"
+flask-bcrypt = "*"
 
 [dev-packages]
 
