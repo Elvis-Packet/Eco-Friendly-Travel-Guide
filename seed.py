@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from app import app
-from models import db, Destination, Activity, Review, DestinationActivity, TravelTip
+from models import db, Destination, Activity, Review, DestinationActivity, TravelTip, User
 
 with app.app_context():
 
@@ -10,6 +10,7 @@ with app.app_context():
     Review.query.delete()
     DestinationActivity.query.delete()
     TravelTip.query.delete()
+    User.query.delete()
 
     d1=Destination(name = "Banff National Park", location = "Canada", description = "A stunning alpine park in the Canadian Rockies known for turquoise lakes, glaciers, and rich biodiversity.", image_url = "https://themilepost.com/wp-content/uploads/2022/05/Peyto_Lake-Banff_NP-Canada.jpg")
     d2=Destination(name = "Costa Rica Cloud Forest", location = "Costa Rica", description = "A misty rainforest teeming with wildlife and rare orchids—perfect for birdwatching and canopy walks.", image_url = "https://landedtravel.com/wp-content/uploads/2020/02/Monteverde-Costa-Rica-Landed-Travel-Private-Travel.jpg")
@@ -89,7 +90,10 @@ with app.app_context():
     t16=TravelTip(tip = "Travel by shuttle or carpool to Banff to help reduce traffic congestion and pollution", destination_id = 1)
     t17=TravelTip(tip = "Pack biodegradable toiletries when visiting Costa Rica to avoid harming water sources.", destination_id = 2)
 
-    db.session.add_all([d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15,a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13,r1, r2, r3, r4, r5, r6,da1, da2, da3, da4, da5, da6, da7, da8, da9, da10,da11, da12, da13, da14, da15, da16, da17, da18, da19, da20,da21,da22,t1, t2, t3, t4, t5, t6, t7, t8, t9, t10,t11, t12, t13, t14, t15, t16, t17])
+    u1=User(username = "Jeremiah", email = "Jeremiah@gmail.com")
+    u1.set_password("FFFFFFF")
+
+    db.session.add_all([d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15,a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13,r1, r2, r3, r4, r5, r6,da1, da2, da3, da4, da5, da6, da7, da8, da9, da10,da11, da12, da13, da14, da15, da16, da17, da18, da19, da20,da21,da22,t1, t2, t3, t4, t5, t6, t7, t8, t9, t10,t11, t12, t13, t14, t15, t16, t17, u1])
     db.session.commit()
     print("Done seeding!")
 
