@@ -59,6 +59,10 @@ class Reviews(Resource):
         db.session.commit()
         return make_response(new_review.to_dict(), 201)
 
+    def get(self):
+            reviews_list = [r.to_dict() for r in Review.query.all()]
+            return make_response(jsonify(reviews_list), 200)
+
 api.add_resource(Reviews, '/reviews')
 
 class ReviewsbyID(Resource):
@@ -184,8 +188,6 @@ class LoginUser(Resource):
         return make_response({'error': "Incorrect username or password"}, 401)
 
 api.add_resource(LoginUser, '/login')
-
-
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
