@@ -5,46 +5,83 @@ db = SQLAlchemy()
 
 class Destination(db.Model, SerializerMixin):
     __tablename__ = 'destinations'
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
     location = db.Column(db.String(100))
-    description = db.Column(db.Text)
-    image_url = db.Column(db.String(200))
-    reviews = db.relationship('Review', back_populates='destination')
-    activities = db.relationship('Activity', secondary='destination_activities', back_populates='destinations')
-    destination_activities = db.relationship('DestinationActivity', back_populates='destination', overlaps="activities")
+    description = db.Column(db.String)
+    image_url = db.Column(db.String, nullable = True)
 
-    serialize_rules = ('-reviews.destination', '-activities.destinations', '-destination_activities.destination')
+    destination_activities = db.relationship("DestinationActivity", back_populates = "destination", cascade = "all, delete-orphan")
+    reviews = db.relationship("Review", back_populates = "destination", cascade = "all, delete-orphan")
+    traveltips = db.relationship("TravelTip", back_populates = "destination", cascade = "all, delete-orphan")
+
+    serialize_rules = ("-destination_activities.destination","-reviews.destination","-traveltips.destination")
+
+    def __repr__(self):
+        return f"Destination : {self.name} | Location : {self.location}"
 
 class Activity(db.Model, SerializerMixin):
     __tablename__ = 'activities'
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    type = db.Column(db.String(50), nullable=False)
+    category = db.Column(db.String(50), nullable=False)
     sustainability_level = db.Column(db.Integer, nullable=False)
-    destination_activities = db.relationship('DestinationActivity', back_populates='activity',overlaps="destinations")
-    destinations = db.relationship('Destination', secondary='destination_activities', back_populates='activities')
 
-    serialize_rules = ('-destinations.activities', '-destination_activities.activity')
+    destination_activities = db.relationship("DestinationActivity", back_populates = "activity", cascade = "all, delete-orphan")
+
+    serialize_rules = ("-destination_activities.activity",)
+
+    def __repr__(self):
+        return f'Activity : {self.name} | Type : {self.category} | Sustainability level : {self.sustainability_level}'
 
 class Review(db.Model, SerializerMixin):
     __tablename__ = 'reviews'
+
     id = db.Column(db.Integer, primary_key=True)
     rating = db.Column(db.Integer,)
-    comment = db.Column(db.Text)
-    user_name = db.Column(db.String(100), )
-    destination_id = db.Column(db.Integer, db.ForeignKey('destinations.id'))
-    destination = db.relationship('Destination', back_populates='reviews')
+    comment = db.Column(db.String)
+    user_name = db.Column(db.String(100),)
+    destination_id = db.Column(db.Integer, db.ForeignKey("destinations.id"))
 
-    serialize_rules = ('-destination.reviews',)
+    destination = db.relationship("Destination", back_populates = "reviews")
+
+    serialize_rules = ("-destination.reviews",)
+
+    def __repr__(self):
+        return f"User : {self.user_name} | Rating : {self.rating} | Comment : {self.comment} "
 
 class DestinationActivity(db.Model, SerializerMixin):
     __tablename__ = 'destination_activities'
-    id = db.Column(db.Integer, primary_key=True)
-    destination_id = db.Column(db.Integer, db.ForeignKey('destinations.id'))
-    activity_id = db.Column(db.Integer, db.ForeignKey('activities.id'))
-    duration_minutes = db.Column(db.Integer)
-    destination = db.relationship('Destination', back_populates='destination_activities', overlaps="activities")
-    activity = db.relationship('Activity', back_populates='destination_activities', overlaps="destinations")
 
-    serialize_rules = ('-destination.destination_activities', '-activity.destination_activities')
+    id = db.Column(db.Integer, primary_key=True)
+    duration_minutes = db.Column(db.Integer)
+    destination_id = db.Column(db.Integer, db.ForeignKey("destinations.id"))
+    activity_id = db.Column(db.Integer, db.ForeignKey("activities.id"))
+
+    destination = db.relationship("Destination", back_populates = "destination_activities")
+    activity = db.relationship("Activity", back_populates = "destination_activities")
+
+    serialize_rules = ("-destination.destination_activities", "-activity.destination_activities",)
+
+    def __repr__(self):
+        return f"<This activity takes about {self.duration_minutes} minutes >"
+
+class TravelTip(db.Model, SerializerMixin):
+    __tablename__ = "traveltips"
+
+    id = db.Column(db.Integer, primary_key = True)
+    tip = db.Column(db.String)
+    destination_id = db.Column(db.Integer, db.ForeignKey("destinations.id"))
+
+    destination = db.relationship("Destination", back_populates = "traveltips")
+
+    serialize_rules = ("-destination.traveltips",)
+
+    def __repr__(self):
+        return f"<{self.tip}>"
+
+
+
+
