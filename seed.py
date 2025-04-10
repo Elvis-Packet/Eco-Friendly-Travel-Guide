@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from app import app
-from models import db, Destination, Activity, Review, DestinationActivity, TravelTip
+from models import db, Destination, Activity, Review, DestinationActivity, TravelTip, User
 
 with app.app_context():
 
@@ -41,12 +41,20 @@ with app.app_context():
     a12=Activity(name = "Scuba Diving", category = "Water", sustainability_level = 5)
     a13=Activity(name = "Scenic Strolling", category = "Land", sustainability_level = 4)
 
-    r1=Review(rating = 8, comment = "Incredible Views", user_name = "Kevin Kago", destination_id = 6)
-    r2=Review(rating = 10, comment = "Beautiful Skies", user_name = "Eddy Mwaniki", destination_id = 10)
-    r3=Review(rating = 6, comment = "Great Hiking Experience", user_name = "Elvis Mungai", destination_id = 3)
-    r4=Review(rating = 9, comment = "Amazing Beaches", user_name = "Steve Baars", destination_id = 14)
-    r5=Review(rating = 7, comment = "Wonderful Experience", user_name = "Godfrey Makeri", destination_id = 12)
-    r6=Review(rating = 5, comment = "Delicious Food", user_name = "Abdullahi Abdikhadir", destination_id = 8)
+    # Get user IDs for reviews
+    kevin = User.query.filter_by(username='Kevin Kago').first()
+    eddy = User.query.filter_by(username='Eddy Mwaniki').first()
+    elvis = User.query.filter_by(username='Elvis Mungai').first()
+    steve = User.query.filter_by(username='Steve Baars').first()
+    godfrey = User.query.filter_by(username='Godfrey Makeri').first()
+    abdullahi = User.query.filter_by(username='Abdullahi Abdikhadir').first()
+
+    r1=Review(rating = 8, comment = "Incredible Views", user_id = kevin.id, destination_id = 6)
+    r2=Review(rating = 10, comment = "Beautiful Skies", user_id = eddy.id, destination_id = 10)
+    r3=Review(rating = 6, comment = "Great Hiking Experience", user_id = elvis.id, destination_id = 3)
+    r4=Review(rating = 9, comment = "Amazing Beaches", user_id = steve.id, destination_id = 14)
+    r5=Review(rating = 7, comment = "Wonderful Experience", user_id = godfrey.id, destination_id = 12)
+    r6=Review(rating = 5, comment = "Delicious Food", user_id = abdullahi.id, destination_id = 8)
 
     da1=DestinationActivity(destination_id = 1, activity_id = 1, duration_minutes = 300)
     da2=DestinationActivity(destination_id = 2,activity_id = 7, duration_minutes = 180)
@@ -92,7 +100,3 @@ with app.app_context():
     db.session.add_all([d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15,a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13,r1, r2, r3, r4, r5, r6,da1, da2, da3, da4, da5, da6, da7, da8, da9, da10,da11, da12, da13, da14, da15, da16, da17, da18, da19, da20,da21,da22,t1, t2, t3, t4, t5, t6, t7, t8, t9, t10,t11, t12, t13, t14, t15, t16, t17])
     db.session.commit()
     print("Done seeding!")
-
-
-
-

@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_serializer import SerializerMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
-from flask_bcrypt import Bcrypt
 
 db = SQLAlchemy()
 
@@ -9,17 +9,22 @@ class User(db.Model, SerializerMixin, UserMixin):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128))
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    email = db.Column(db.String(100), unique=True, nullable=False)
+    password_hash = db.Column(db.String(128), nullable=False)
 
-    reviews = db.relationship('Review', backref='author', lazy=True)
+    reviews = db.relationship("Review", back_populates="user", cascade="all, delete-orphan")
+
+    serialize_rules = ("-password_hash", "-reviews.user")
 
     def set_password(self, password):
-        self.password_hash = Bcrypt().generate_password_hash(password).decode('utf-8')
+        self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
-        return Bcrypt().check_password_hash(self.password_hash, password)
+        return check_password_hash(self.password_hash, password)
+
+    def __repr__(self):
+        return f'User: {self.username} | Email: {self.email}'
 
 class Destination(db.Model, SerializerMixin):
     __tablename__ = 'destinations'
@@ -49,7 +54,15 @@ class Activity(db.Model, SerializerMixin):
 
     destination_activities = db.relationship("DestinationActivity", back_populates="activity", cascade="all, delete-orphan")
 
-    serialize_rules = ("-destination_activities.activity")
+    serialize_rules = ("-destination_activities.activity",)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'category': self.category,
+            'sustainability_level': self.sustainability_level
+        }
 
     def __repr__(self):
         return f'Activity: {self.name} | Type: {self.category} | Sustainability level: {self.sustainability_level}'
@@ -59,18 +72,17 @@ class Review(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     rating = db.Column(db.Integer)
-    comment = db.Column(db.Text)
-    user_name = db.Column(db.String(100))
-    destination_id = db.Column(db.Integer, db.ForeignKey('destinations.id'))
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    comment = db.Column(db.String)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    destination_id = db.Column(db.Integer, db.ForeignKey("destinations.id"))
 
-    destination = db.relationship('Destination', back_populates='reviews')
-    user = db.relationship('User', back_populates='reviews', overlaps="author,reviews")
+    destination = db.relationship("Destination", back_populates="reviews")
+    user = db.relationship("User", back_populates="reviews")
 
-    serialize_rules = ('-destination.reviews', '-user.reviews')
+    serialize_rules = ("-destination.reviews", "-user.reviews")
 
     def __repr__(self):
-        return f"User: {self.user_name} | Rating: {self.rating} | Comment: {self.comment}"
+        return f"Review ID: {self.id} | Rating: {self.rating} | User ID: {self.user_id}"
 
 class DestinationActivity(db.Model, SerializerMixin):
     __tablename__ = 'destination_activities'
@@ -97,7 +109,14 @@ class TravelTip(db.Model, SerializerMixin):
 
     destination = db.relationship("Destination", back_populates="traveltips")
 
-    serialize_rules = ("-destination.traveltips")
+    serialize_rules = ("-destination.traveltips",)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'tip': self.tip,
+            'destination_id': self.destination_id
+        }
 
     def __repr__(self):
         return f"<{self.tip}>"
