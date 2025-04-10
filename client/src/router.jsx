@@ -9,7 +9,7 @@ const DestinationList = lazy(() => import('./pages/DestinationList'));
 const DestinationDetail = lazy(() => import('./pages/DestinationDetail'));
 const MyJournals = lazy(() => import('./pages/MyJournals'));
 
-// Import Loading component
+// Import Loaded component
 import Loading from './components/common/Loading';
 
 
