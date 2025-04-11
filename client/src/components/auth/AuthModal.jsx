@@ -134,15 +134,6 @@ const AuthModal = ({ isOpen, onClose }) => {
       } else {
         setErrors({ form: authData.error });
       }
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const newErrors = validateForm();
-    if (Object.keys(newErrors).length === 0) {
-      // Handle authentication logic here
-      console.log('Form submitted:', formData);
-      onClose();
-
     } else {
       setErrors(newErrors);
     }

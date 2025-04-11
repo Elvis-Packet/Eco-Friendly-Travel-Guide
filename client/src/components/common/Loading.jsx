@@ -43,7 +43,7 @@ const LoadingContainer = styled.divdisplay: flex;
   height: 200px;
 `;
 
-  height: 200px;;
+  
 
 
 const Spinner = styled.div`
@@ -68,8 +68,7 @@ const LoadingText = styled.p`
   font-size: 1rem;
 `;
 
-const LoadingText = styled.pcolor: #6c757d;
-  font-size: 1rem;;
+
 
 
 const Loading = () => {
