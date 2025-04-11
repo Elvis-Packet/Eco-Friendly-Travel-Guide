@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 
+import { useAppContext } from '../../context/AppContext';
+
+
 const ModalOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -116,13 +119,21 @@ const AuthModal = ({ isOpen, onClose }) => {
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  const { login, signup } = useAppContext();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = validateForm();
     if (Object.keys(newErrors).length === 0) {
-      // Handle authentication logic here
-      console.log('Form submitted:', formData);
-      onClose();
+      const authData = isLogin
+        ? await login(formData.username, formData.password)
+        : await signup(formData);
+
+      if (authData.success) {
+        onClose();
+      } else {
+        setErrors({ form: authData.error });
+      }
     } else {
       setErrors(newErrors);
     }

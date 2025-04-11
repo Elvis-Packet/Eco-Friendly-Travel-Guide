@@ -370,6 +370,12 @@ const MyJournals = () => {
         <Subtitle>
           Share and explore eco-friendly travel experiences and sustainability tips from our community.
         </Subtitle>
+        <SubmitButton
+          style={{ marginTop: '1.5rem' }}
+          onClick={() => setShowModal(true)}
+        >
+          + New Journal Entry
+        </SubmitButton>
       </PageHeader>
 
       {journals.length > 0 ? (

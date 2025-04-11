@@ -7,7 +7,7 @@ const CardContainer = styled.div`
   padding: 1.5rem;
   margin-bottom: 1.5rem;
   transition: transform 0.3s ease;
-  
+
   &:hover {
     transform: translateY(-5px);
   }
@@ -48,7 +48,7 @@ const SustainableBadge = styled.div`
 
 const StayCard = ({ stay }) => {
   const { name, description, price, sustainable } = stay;
-  
+
   return (
     <CardContainer>
       <StayHeader>

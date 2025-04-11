@@ -1,23 +1,29 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
-const FooterContainer = styled.footerbackground-color: #f8f9fa;
+const FooterContainer = styled.footer`
+  background-color: #f8f9fa;
   padding: 3rem 5%;
   margin-top: 4rem;
-  border-top: 1px solid #e9ecef;;
+  border-top: 1px solid #e9ecef;
+`;
 
-const FooterContent = styled.divmax-width: 1200px;
+const FooterContent = styled.div`
+  max-width: 1200px;
   margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;;
+  gap: 2rem;
+`;
 
-const FooterSection = styled.divh3 {
+const FooterSection = styled.div`
+  h3 {
     color: #2e7d32;
     font-size: 1.2rem;
     margin-bottom: 1rem;
     font-weight: 600;
-  };
+  }
+`;
 
 const FooterLink = styled(Link)`
   display: block;
@@ -31,9 +37,11 @@ const FooterLink = styled(Link)`
   }
 `;
 
-const SocialLinks = styled.divdisplay: flex;
+const SocialLinks = styled.div`
+  display: flex;
   gap: 1rem;
-  margin-top: 1rem;;
+  margin-top: 1rem;
+`;
 
 const SocialLink = styled.a`
   color: #6c757d;
@@ -45,11 +53,13 @@ const SocialLink = styled.a`
   }
 `;
 
-const Copyright = styled.divtext-align: center;
+const Copyright = styled.div`
+  text-align: center;
   color: #6c757d;
   margin-top: 2rem;
   padding-top: 2rem;
-  border-top: 1px solid #e9ecef;;
+  border-top: 1px solid #e9ecef;
+`;
 
 const Footer = () => {
   return (
@@ -62,30 +72,30 @@ const Footer = () => {
           <FooterLink to="/my-journals">My Journals</FooterLink>
         </FooterSection>
 
-    <FooterSection>
-      <h3>About Us</h3>
-      <FooterLink to="#">Our Mission</FooterLink>
-      <FooterLink to="#">Sustainability</FooterLink>
-      <FooterLink to="#">Contact Us</FooterLink>
-    </FooterSection>
+        <FooterSection>
+          <h3>About Us</h3>
+          <FooterLink to="#">Our Mission</FooterLink>
+          <FooterLink to="#">Sustainability</FooterLink>
+          <FooterLink to="#">Contact Us</FooterLink>
+        </FooterSection>
 
-    <FooterSection>
-      <h3>Connect With Us</h3>
-      <p style={{ color: '#6c757d', marginBottom: '1rem' }}>
-        Follow us on social media for eco-friendly travel tips and updates.
-      </p>
-      <SocialLinks>
-        <SocialLink href="#" target="_blank" rel="noopener noreferrer">📱</SocialLink>
-        <SocialLink href="#" target="_blank" rel="noopener noreferrer">📸</SocialLink>
-        <SocialLink href="#" target="_blank" rel="noopener noreferrer">🐦</SocialLink>
-      </SocialLinks>
-    </FooterSection>
-  </FooterContent>
+        <FooterSection>
+          <h3>Connect With Us</h3>
+          <p style={{ color: '#6c757d', marginBottom: '1rem' }}>
+            Follow us on social media for eco-friendly travel tips and updates.
+          </p>
+          <SocialLinks>
+            <SocialLink href="#" target="_blank" rel="noopener noreferrer">📱</SocialLink>
+            <SocialLink href="#" target="_blank" rel="noopener noreferrer">📸</SocialLink>
+            <SocialLink href="#" target="_blank" rel="noopener noreferrer">🐦</SocialLink>
+          </SocialLinks>
+        </FooterSection>
+      </FooterContent>
 
-  <Copyright>
-    <p>© {new Date().getFullYear()} Eco Wanderer. All rights reserved.</p>
-  </Copyright>
-</FooterContainer>
+      <Copyright>
+        <p>© {new Date().getFullYear()} Eco Wanderer. All rights reserved.</p>
+      </Copyright>
+    </FooterContainer>
   );
 };
 

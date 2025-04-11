@@ -1,9 +1,21 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import axios from 'axios';
 
 // Create context
 const AppContext = createContext();
 
-// Sample data for destinations
+// API base URL
+const API_BASE_URL = 'https://eco-friendly-travel-guide.onrender.com';
+
+// Create axios instance
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
+
+// Sample data for destinations (fallback data)
 const sampleDestinations = [
   {
     id: 1,
@@ -60,22 +72,44 @@ export const AppProvider = ({ children }) => {
   // State for user authentication
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  
+
   // State for destinations
-  const [destinations, setDestinations] = useState(sampleDestinations);
-  
+  const [destinations, setDestinations] = useState([]);
+
   // State for journals
   const [journals, setJournals] = useState([]);
-  
+
   // State for loading status
   const [loading, setLoading] = useState(false);
-  
-  // Simulate fetching journals from API
+
+  // State for error handling
+  const [error, setError] = useState(null);
+
+  // Fetch destinations from API
+  useEffect(() => {
+    const fetchDestinations = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await api.get('/destinations');
+        setDestinations(response.data);
+      } catch (error) {
+        console.error('Error fetching destinations:', error);
+        setError('Failed to load destinations. Using sample data instead.');
+        setDestinations(sampleDestinations); // Fallback to sample data
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDestinations();
+  }, []);
+
+  // Fetch journals from localStorage
   useEffect(() => {
     const fetchJournals = async () => {
       setLoading(true);
       try {
-        // In a real app, this would be an API call
         // For now, we'll use localStorage to persist journals
         const savedJournals = localStorage.getItem('eco-travel-journals');
         if (savedJournals) {
@@ -87,29 +121,29 @@ export const AppProvider = ({ children }) => {
         setLoading(false);
       }
     };
-    
+
     fetchJournals();
   }, []);
-  
+
   // Save journals to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem('eco-travel-journals', JSON.stringify(journals));
   }, [journals]);
-  
+
   // Login function
   const login = (userData) => {
     setUser(userData);
     setIsAuthenticated(true);
     localStorage.setItem('eco-travel-user', JSON.stringify(userData));
   };
-  
+
   // Logout function
   const logout = () => {
     setUser(null);
     setIsAuthenticated(false);
     localStorage.removeItem('eco-travel-user');
   };
-  
+
   // Check if user is already logged in
   useEffect(() => {
     const savedUser = localStorage.getItem('eco-travel-user');
@@ -118,7 +152,7 @@ export const AppProvider = ({ children }) => {
       setIsAuthenticated(true);
     }
   }, []);
-  
+
   // Add a new journal entry
   const addJournal = (journal) => {
     const newJournal = {
@@ -128,24 +162,40 @@ export const AppProvider = ({ children }) => {
     };
     setJournals([newJournal, ...journals]);
   };
-  
+
   // Update an existing journal entry
   const updateJournal = (id, updatedJournal) => {
-    setJournals(journals.map(journal => 
+    setJournals(journals.map(journal =>
       journal.id === id ? { ...journal, ...updatedJournal } : journal
     ));
   };
-  
+
   // Delete a journal entry
   const deleteJournal = (id) => {
     setJournals(journals.filter(journal => journal.id !== id));
   };
-  
+
   // Get a single destination by ID
-  const getDestination = (id) => {
-    return destinations.find(destination => destination.id === parseInt(id));
+  const getDestination = async (id) => {
+    // First check if we already have it in state
+    const cachedDestination = destinations.find(destination => destination.id === parseInt(id));
+    if (cachedDestination) return cachedDestination;
+
+    // If not found in state, try to fetch it from API
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.get(`/destinations/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching destination ${id}:`, error);
+      setError('Failed to load destination details.');
+      return null;
+    } finally {
+      setLoading(false);
+    }
   };
-  
+
   return (
     <AppContext.Provider value={{
       user,
@@ -159,7 +209,8 @@ export const AppProvider = ({ children }) => {
       updateJournal,
       deleteJournal,
       loading,
-      setLoading
+      setLoading,
+      error
     }}>
       {children}
     </AppContext.Provider>

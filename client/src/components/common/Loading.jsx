@@ -1,3 +1,9 @@
+
+import styled from 'styled-components';
+
+const LoadingContainer = styled.div`
+  display: flex;
+
 import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
@@ -24,16 +30,21 @@ const Layout = () => {
 export default Layout;
 
 
-Steve Baars
-3:00 PM
+
 import styled from 'styled-components';
 
 const LoadingContainer = styled.divdisplay: flex;
+
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  height: 200px;;
+
+  height: 200px;
+`;
+
+  
+
 
 const Spinner = styled.div`
   width: 40px;
@@ -51,8 +62,14 @@ const Spinner = styled.div`
   }
 `;
 
-const LoadingText = styled.pcolor: #6c757d;
-  font-size: 1rem;;
+
+const LoadingText = styled.p`
+  color: #6c757d;
+  font-size: 1rem;
+`;
+
+
+
 
 const Loading = () => {
   return (
