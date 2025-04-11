@@ -4,6 +4,8 @@ import * as Yup from 'yup';
 import styled from 'styled-components';
 import { useAppContext } from '../../context/AppContext';
 
+
+
 const FormContainer = styled.div`
   background-color: white;
   border-radius: 8px;
@@ -141,7 +143,7 @@ const validationSchema = Yup.object({
 });
 
 const JournalForm = ({ destinationId, destinationName }) => {
-  const { addJournal } = useAppContext();
+  const { addJournal, isAuthenticated } = useAppContext();
   const [submitted, setSubmitted] = useState(false);
 
   const initialValues = {
