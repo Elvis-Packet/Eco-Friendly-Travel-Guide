@@ -162,7 +162,7 @@ const ViewMoreLink = styled(Link)`
 `;
 
 const Home = () => {
-  const { destinations } = useAppContext();
+  const { destinations, loading, error } = useAppContext();
 
   // Display only the first 3 destinations as a preview
   const previewDestinations = destinations.slice(0, 3);
@@ -206,23 +206,40 @@ const Home = () => {
 
       <DestinationPreview>
         <SectionTitle>Featured Destinations</SectionTitle>
-        <DestinationGrid>
-          {previewDestinations.map(destination => (
-            <DestinationCard key={destination.id}>
-              <Link to={`/destinations/${destination.id}`}>
-                <DestinationImage src={destination.image} alt={destination.name} />
-              </Link>
-              <DestinationInfo>
-                <DestinationName>{destination.name}</DestinationName>
-                <DestinationRating>
-                  ★ {destination.rating.toFixed(1)}
-                </DestinationRating>
-                <Link to={`/destinations/${destination.id}`}>View Details</Link>
-              </DestinationInfo>
-            </DestinationCard>
-          ))}
-        </DestinationGrid>
-        <ViewMoreLink to="/destinations">View All Destinations</ViewMoreLink>
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '3rem' }}>
+            <div className="loading-spinner"></div>
+            <p>Loading destinations...</p>
+          </div>
+        ) : error ? (
+          <div style={{ textAlign: 'center', padding: '3rem', color: '#d32f2f' }}>
+            <p>{error}</p>
+          </div>
+        ) : previewDestinations.length > 0 ? (
+          <>
+            <DestinationGrid>
+              {previewDestinations.map(destination => (
+                <DestinationCard key={destination.id}>
+                  <Link to={`/destinations/${destination.id}`}>
+                    <DestinationImage src={destination.image_url || destination.image} alt={destination.name} />
+                  </Link>
+                  <DestinationInfo>
+                    <DestinationName>{destination.name}</DestinationName>
+                    <DestinationRating>
+                      ★ {destination.rating ? destination.rating.toFixed(1) : '4.5'}
+                    </DestinationRating>
+                    <Link to={`/destinations/${destination.id}`}>View Details</Link>
+                  </DestinationInfo>
+                </DestinationCard>
+              ))}
+            </DestinationGrid>
+            <ViewMoreLink to="/destinations">View All Destinations</ViewMoreLink>
+          </>
+        ) : (
+          <div style={{ textAlign: 'center', padding: '3rem' }}>
+            <p>No destinations available at the moment. Please check back later.</p>
+          </div>
+        )}
       </DestinationPreview>
     </>
   );

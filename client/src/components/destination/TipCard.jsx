@@ -7,7 +7,7 @@ const CardContainer = styled.div`
   padding: 1.5rem;
   margin-bottom: 1.5rem;
   transition: transform 0.3s ease;
-  
+
   &:hover {
     transform: translateY(-5px);
   }
@@ -19,7 +19,7 @@ const TipTitle = styled.h3`
   margin-bottom: 0.75rem;
   display: flex;
   align-items: center;
-  
+
   &::before {
     content: '💡';
     margin-right: 0.5rem;
@@ -34,7 +34,7 @@ const TipContent = styled.p`
 
 const TipCard = ({ tip }) => {
   const { title, content } = tip;
-  
+
   return (
     <CardContainer>
       <TipTitle>{title}</TipTitle>
