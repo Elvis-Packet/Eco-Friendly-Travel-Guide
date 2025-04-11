@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { useAppContext } from '../context/AppContext';
 
-
 const PageContainer = styled.div`
   padding: 2rem 0;
 `;
@@ -25,21 +24,6 @@ const Subtitle = styled.p`
   max-width: 800px;
   margin: 0 auto;
 `;
-
-const PageContainer = styled.divpadding: 2rem 0;;
-
-const PageHeader = styled.divmargin-bottom: 2rem;
-  text-align: center;;
-
-const Title = styled.h1font-size: 2.5rem;
-  color: #2e7d32;
-  margin-bottom: 1rem;;
-
-const Subtitle = styled.pfont-size: 1.1rem;
-  color: #6c757d;
-  max-width: 800px;
-  margin: 0 auto;;
-
 
 const SearchContainer = styled.div`
   max-width: 600px;
@@ -81,23 +65,15 @@ const FilterSelect = styled.select`
   }
 `;
 
-
 const DestinationsGrid = styled.div`
   display: grid;
-
-const DestinationsGrid = styled.divdisplay: grid;
-
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 2rem;
   margin: 2rem auto;
   max-width: 1200px;
   padding: 0 2rem;
-
   justify-content: center;
 `;
-
-  justify-content: center;;
-
 
 const DestinationCard = styled.div`
   border-radius: 8px;
@@ -111,7 +87,6 @@ const DestinationCard = styled.div`
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   }
 `;
-
 
 const DestinationImage = styled.img`
   width: 100%;
@@ -139,36 +114,13 @@ const DestinationRating = styled.div`
 
 const DestinationDescription = styled.p`
   color: #6c757d;
-
-const DestinationImage = styled.imgwidth: 100%;
-  height: 200px;
-  object-fit: cover;;
-
-const DestinationInfo = styled.divpadding: 1.5rem;;
-
-const DestinationName = styled.h3font-size: 1.3rem;
-  margin-bottom: 0.5rem;
-  color: #333;;
-
-const DestinationRating = styled.divdisplay: flex;
-  align-items: center;
-  color: #f9a825;
-  margin-bottom: 1rem;
-  font-weight: 500;;
-
-const DestinationDescription = styled.pcolor: #6c757d;
-
   margin-bottom: 1rem;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-
   text-overflow: ellipsis;
 `;
-
-  text-overflow: ellipsis;;
-
 
 const ViewButton = styled(Link)`
   display: inline-block;
@@ -203,28 +155,15 @@ const NoResults = styled.div`
 `;
 
 const DestinationList = () => {
-
   const { destinations, loading, error } = useAppContext();
-
-  const { destinations } = useAppContext();
-
   const [searchTerm, setSearchTerm] = useState('');
   const [ratingFilter, setRatingFilter] = useState('');
 
-  // Filter destinations based on search term and rating filter
   const filteredDestinations = destinations.filter(destination => {
     const matchesSearch = destination.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          destination.description.toLowerCase().includes(searchTerm.toLowerCase());
-
-
     const matchesRating = ratingFilter === '' || destination.rating >= parseFloat(ratingFilter);
-
     return matchesSearch && matchesRating;
-
-const matchesRating = ratingFilter === '' || destination.rating >= parseFloat(ratingFilter);
-
-return matchesSearch && matchesRating;
-
   });
 
   return (
@@ -288,51 +227,6 @@ return matchesSearch && matchesRating;
         </NoResults>
       )}
     </PageContainer>
-
-  <SearchContainer>
-    <SearchInput
-      type="text"
-      placeholder="Search destinations..."
-      value={searchTerm}
-      onChange={(e) => setSearchTerm(e.target.value)}
-    />
-    <FilterSelect
-      value={ratingFilter}
-      onChange={(e) => setRatingFilter(e.target.value)}
-    >
-      <option value="">All Ratings</option>
-      <option value="4.5">4.5+ Stars</option>
-      <option value="4">4+ Stars</option>
-      <option value="3.5">3.5+ Stars</option>
-    </FilterSelect>
-  </SearchContainer>
-
-  {filteredDestinations.length > 0 ? (
-    <DestinationsGrid>
-      {filteredDestinations.map(destination => (
-        <DestinationCard key={destination.id}>
-          <DestinationImage src={destination.image} alt={destination.name} />
-          <DestinationInfo>
-            <DestinationName>{destination.name}</DestinationName>
-            <DestinationRating>
-              ★ {destination.rating.toFixed(1)}
-            </DestinationRating>
-            <DestinationDescription>
-              {destination.description}
-            </DestinationDescription>
-            <ViewButton to={`/destinations/${destination.id}`}>View Details</ViewButton>
-          </DestinationInfo>
-        </DestinationCard>
-      ))}
-    </DestinationsGrid>
-  ) : (
-    <NoResults>
-      <h3>No destinations found</h3>
-      <p>Try adjusting your search criteria</p>
-    </NoResults>
-  )}
-</PageContainer>
-
   );
 };
 
