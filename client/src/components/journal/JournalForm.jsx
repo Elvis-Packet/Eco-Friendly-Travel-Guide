@@ -4,8 +4,6 @@ import * as Yup from 'yup';
 import styled from 'styled-components';
 import { useAppContext } from '../../context/AppContext';
 
-
-
 const FormContainer = styled.div`
   background-color: white;
   border-radius: 8px;
@@ -127,8 +125,15 @@ const validationSchema = Yup.object({
     .min(5, 'Title must be at least 5 characters')
     .max(100, 'Title must be less than 100 characters'),
   content: Yup.string()
-    .required('Content is required')
-    .min(20, 'Please share more details (minimum 20 characters)')
+    .required('Please share your experience')
+    .test('not-empty', 'Please share your experience', value => {
+      console.log('--- VALIDATION DEBUG ---');
+      console.log('Input value:', JSON.stringify(value));
+      console.log('Type:', typeof value);
+      const isValid = value && value.trim().length > 0;
+      console.log('Is valid:', isValid);
+      return isValid;
+    })
     .max(1000, 'Content must be less than 1000 characters'),
   rating: Yup.number()
     .required('Please select a rating')
@@ -155,6 +160,9 @@ const JournalForm = ({ destinationId, destinationName }) => {
   };
 
   const handleSubmit = (values, { resetForm }) => {
+    console.log('Form values:', values); // Debug log
+    console.log('Content length:', values.content.length); // Debug log
+    
     // Create journal entry with destination info
     const journalEntry = {
       ...values,
@@ -163,6 +171,7 @@ const JournalForm = ({ destinationId, destinationName }) => {
       createdAt: new Date().toISOString(),
     };
 
+    console.log('Journal entry:', journalEntry); // Debug log
     // Add journal entry to context
     addJournal(journalEntry);
 
@@ -200,7 +209,7 @@ const JournalForm = ({ destinationId, destinationName }) => {
             <FormGroup>
               <Label htmlFor="content">Your Experience</Label>
               <TextArea
-                as="textarea"
+                component="textarea"
                 id="content"
                 name="content"
                 placeholder="Share your experience at this destination..."
