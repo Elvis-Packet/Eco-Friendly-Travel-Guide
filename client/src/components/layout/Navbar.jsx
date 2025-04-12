@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useAppContext } from '../../context/AppContext';
 import styled from 'styled-components';
 import { createGlobalStyle } from 'styled-components';
 import { useState } from 'react';
@@ -85,8 +86,29 @@ const LoginButton = styled.button`
   }
 `;
 
+// Add logout button style
+const LogoutButton = styled.button`
+  background-color: #d32f2f; /* Red color */
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #b71c1c; /* Darker red on hover */
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+`;
+
 const Navbar = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { isAuthenticated, logout } = useAppContext();
 
   return (
     <>
@@ -99,9 +121,15 @@ const Navbar = () => {
           <NavLink to="/">Home</NavLink>
           <NavLink to="/destinations">Destinations</NavLink>
           <NavLink to="/my-journals">My Journals</NavLink>
-          <LoginButton onClick={() => setIsModalOpen(true)}>
-            Login
-          </LoginButton>
+          {isAuthenticated ? (
+            <LogoutButton onClick={logout}>
+              Sign Out
+            </LogoutButton>
+          ) : (
+            <LoginButton onClick={() => setIsModalOpen(true)}>
+              Login
+            </LoginButton>
+          )}
         </NavLinks>
       </NavContainer>
       <AuthModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />

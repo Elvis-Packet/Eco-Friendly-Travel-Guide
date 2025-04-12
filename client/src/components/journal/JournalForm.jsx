@@ -4,8 +4,6 @@ import * as Yup from 'yup';
 import styled from 'styled-components';
 import { useAppContext } from '../../context/AppContext';
 
-
-
 const FormContainer = styled.div`
   background-color: white;
   border-radius: 8px;

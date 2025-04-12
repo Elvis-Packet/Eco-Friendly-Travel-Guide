@@ -146,49 +146,62 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem('eco-travel-journals', JSON.stringify(journals));
   }, [journals]);
+
   // Signup function
-  // Signup function
-const signup = async (formData) => {
-  try {
-    const res = await fetch(`${API_BASE_URL}/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        username: formData.username,
-        email: formData.email,
-        password: formData.password,
-      }),
-    });
-    const data = await res.json();
-
-    if (res.ok) {
-      return { success: true };
-    } else {
-      return { success: false, error: data.error || 'Registration failed' };
-    }
-  } catch (err) {
-    return { success: false, error: 'Server error during registration' };
-  }
-};
-
-
-  // Login function
-  const login = (userData, token) => {
-    setUser(userData);
-    setIsAuthenticated(true);
-    localStorage.setItem('eco-travel-user', JSON.stringify(userData));
-    localStorage.setItem('eco-travel-token', token);
+  const signup = async ({ username, email, password }) => {
+    try {
+      await axios.post('https://eco-friendly-travel-guide.onrender.com/register', {
+        username,
+        email,
+        password,
+      });
   
-    // Set token as default header for axios
-    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      // Log the user in immediately after signup
+      return await login(username, password);
+    } catch (err) {
+      return {
+        success: false,
+        error: err.response?.data?.error || 'Signup failed',
+      };
+    }
   };
   
-  // Logout function
+
+  // Login function
+  const login = async (username, password) => {
+    try {
+      const res = await axios.post('https://eco-friendly-travel-guide.onrender.com/login', {
+        username,
+        password,
+      });
+  
+      const token = res.data.access_token;
+      localStorage.setItem('token', token);
+      localStorage.setItem('eco-travel-token', token);
+  
+      const newUser = { username };
+      setUser(newUser);
+      setIsAuthenticated(true);
+      localStorage.setItem('eco-travel-user', JSON.stringify(newUser));
+      
+      // Set token as default header for axios
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  
+      return { success: true };
+    } catch (err) {
+      return {
+        success: false,
+        error: err.response?.data?.error || 'Login failed',
+      };
+    }
+  };
+  //Logout function
   const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('eco-travel-token');
+    localStorage.removeItem('eco-travel-user');
     setUser(null);
     setIsAuthenticated(false);
-    localStorage.removeItem('eco-travel-user');
-    localStorage.removeItem('eco-travel-token');
     delete api.defaults.headers.common['Authorization'];
   };
   
@@ -217,10 +230,13 @@ const signup = async (formData) => {
 
   // Update an existing journal entry
   const updateJournal = (id, updatedJournal) => {
-    setJournals(journals.map(journal =>
+    const updatedJournals = journals.map(journal =>
       journal.id === id ? { ...journal, ...updatedJournal } : journal
-    ));
+    );
+    setJournals(updatedJournals);
+    localStorage.setItem('eco-travel-journals', JSON.stringify(updatedJournals)); // Directly update localStorage
   };
+  
 
   // Delete a journal entry
   const deleteJournal = (id) => {

@@ -125,14 +125,19 @@ const AuthModal = ({ isOpen, onClose }) => {
     e.preventDefault();
     const newErrors = validateForm();
     if (Object.keys(newErrors).length === 0) {
-      const authData = isLogin
-        ? await login(formData.username, formData.password)
-        : await signup(formData);
+      try {
+        const authData = isLogin
+          ? await login(formData.username, formData.password)
+          : await signup(formData);
 
-      if (authData.success) {
-        onClose();
-      } else {
-        setErrors({ form: authData.error });
+        if (authData.success) {
+          onClose();
+          window.location.reload(); // Refresh to update auth state
+        } else {
+          setErrors({ form: authData.error });
+        }
+      } catch (error) {
+        setErrors({ form: 'An error occurred during authentication' });
       }
     } else {
       setErrors(newErrors);
