@@ -70,8 +70,14 @@ const sampleDestinations = [
 // Provider component
 export const AppProvider = ({ children }) => {
   // State for user authentication
-  const [user, setUser] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(() => {
+    const storedUser = localStorage.getItem('eco-travel-user');
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+  
+  const [isAuthenticated, setIsAuthenticated] = useState(() => !!localStorage.getItem('eco-travel-user'));
+  const [token, setToken] = useState(() => localStorage.getItem('eco-travel-token') || null);
+  
 
   // State for destinations
   const [destinations, setDestinations] = useState([]);
@@ -87,22 +93,33 @@ export const AppProvider = ({ children }) => {
 
   // Fetch destinations from API
   useEffect(() => {
+    let isMounted = true;
     const fetchDestinations = async () => {
       setLoading(true);
       setError(null);
       try {
         const response = await api.get('/destinations');
-        setDestinations(response.data);
+        if (isMounted) {
+          setDestinations(response.data);
+        }
       } catch (error) {
         console.error('Error fetching destinations:', error);
-        setError('Failed to load destinations. Using sample data instead.');
-        setDestinations(sampleDestinations); // Fallback to sample data
+        if (isMounted) {
+          setError('Failed to load destinations. Using sample data instead.');
+          setDestinations(sampleDestinations); // Fallback to sample data
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchDestinations();
+    
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // Fetch journals from localStorage
@@ -129,27 +146,62 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem('eco-travel-journals', JSON.stringify(journals));
   }, [journals]);
+  // Signup function
+  // Signup function
+const signup = async (formData) => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+      }),
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      return { success: true };
+    } else {
+      return { success: false, error: data.error || 'Registration failed' };
+    }
+  } catch (err) {
+    return { success: false, error: 'Server error during registration' };
+  }
+};
+
 
   // Login function
-  const login = (userData) => {
+  const login = (userData, token) => {
     setUser(userData);
     setIsAuthenticated(true);
     localStorage.setItem('eco-travel-user', JSON.stringify(userData));
+    localStorage.setItem('eco-travel-token', token);
+  
+    // Set token as default header for axios
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   };
-
+  
   // Logout function
   const logout = () => {
     setUser(null);
     setIsAuthenticated(false);
     localStorage.removeItem('eco-travel-user');
+    localStorage.removeItem('eco-travel-token');
+    delete api.defaults.headers.common['Authorization'];
   };
+  
 
   // Check if user is already logged in
   useEffect(() => {
     const savedUser = localStorage.getItem('eco-travel-user');
-    if (savedUser) {
+    const savedToken = localStorage.getItem('eco-travel-token');
+
+    if (savedUser && savedToken) {
       setUser(JSON.parse(savedUser));
       setIsAuthenticated(true);
+      api.defaults.headers.common['Authorization'] = `Bearer ${savedToken}`;
     }
   }, []);
 
@@ -199,7 +251,9 @@ export const AppProvider = ({ children }) => {
   return (
     <AppContext.Provider value={{
       user,
+      token,
       isAuthenticated,
+      signup,
       login,
       logout,
       destinations,

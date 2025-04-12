@@ -75,7 +75,7 @@ const Loading = () => {
   return (
     <LoadingContainer>
       <Spinner />
-      <LoadingText>Loading...</LoadingText>
+      <LoadingText>Give us a few moments...</LoadingText>
     </LoadingContainer>
   );
 };
