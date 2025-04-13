@@ -1,6 +1,7 @@
 {
   "name": "eco-friendly-travel-guide",
   "private": true,
+  "homepage": "https://Elvis-Packet.github.io/Eco-Friendly-Travel-Guide",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
@@ -9,7 +10,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "deploy": "gh-pages -d dist",
-    "predeploy": "npm run build",
+    "predeploy": "npm run build"
   },
 
   "dependencies": {
