@@ -52,7 +52,9 @@ class Reviews(Resource):
         new_review = Review(
             rating = data['rating'],
             comment = data['comment'],
-            user_name = data['user_name'],
+            title = data['title'],
+            visit_date = data['visit_date'],
+            sustainability_tips = data['sustainability_tips']
             destination_id = data['destination_id']
         )
         db.session.add(new_review)

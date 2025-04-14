@@ -4,7 +4,7 @@ import axios from 'axios';
 // Create context
 const AppContext = createContext();
 
-// API base URL
+// API base URL - Update this to your new backend URL
 const API_BASE_URL = 'https://eco-friendly-travel-guide.onrender.com';
 
 // Create axios instance
