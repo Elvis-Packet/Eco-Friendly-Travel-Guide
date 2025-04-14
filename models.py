@@ -44,7 +44,9 @@ class Review(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     rating = db.Column(db.Integer,)
     comment = db.Column(db.String)
-    user_name = db.Column(db.String(100),)
+    title = db.Column(db.String)
+    visit_date = db.Column(db.String)
+    sustainability_tips = db.Column(db.String, nullable = True)
     destination_id = db.Column(db.Integer, db.ForeignKey("destinations.id"))
 
     destination = db.relationship("Destination", back_populates = "reviews")

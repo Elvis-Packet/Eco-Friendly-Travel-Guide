@@ -230,11 +230,31 @@ export const AppProvider = ({ children }) => {
 
   // Update an existing journal entry
   const updateJournal = (id, updatedJournal) => {
-    const updatedJournals = journals.map(journal =>
-      journal.id === id ? { ...journal, ...updatedJournal } : journal
-    );
+    console.group('Updating Journal');
+    console.log('Current journals:', journals);
+    console.log('Updating journal ID:', id);
+    console.log('New data:', updatedJournal);
+    
+    const updatedJournals = journals.map(journal => {
+      if (journal.id === id) {
+        const merged = { 
+          ...journal, 
+          ...updatedJournal,
+          updatedAt: new Date().toISOString() // Add update timestamp
+        };
+        console.log('Merged journal:', merged);
+        return merged;
+      }
+      return journal;
+    });
+
+    console.log('Updated journals array:', updatedJournals);
     setJournals(updatedJournals);
-    localStorage.setItem('eco-travel-journals', JSON.stringify(updatedJournals)); // Directly update localStorage
+    localStorage.setItem('eco-travel-journals', JSON.stringify(updatedJournals));
+    console.log('Update complete - saved to localStorage');
+    console.groupEnd();
+    
+    return updatedJournals.find(j => j.id === id);
   };
   
 

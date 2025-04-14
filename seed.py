@@ -42,12 +42,12 @@ with app.app_context():
     a12=Activity(name = "Scuba Diving", category = "Water", sustainability_level = 5)
     a13=Activity(name = "Scenic Strolling", category = "Land", sustainability_level = 4)
 
-    r1=Review(rating = 8, comment = "Incredible Views", user_name = "Kevin Kago", destination_id = 6)
-    r2=Review(rating = 10, comment = "Beautiful Skies", user_name = "Eddy Mwaniki", destination_id = 10)
-    r3=Review(rating = 6, comment = "Great Hiking Experience", user_name = "Elvis Mungai", destination_id = 3)
-    r4=Review(rating = 9, comment = "Amazing Beaches", user_name = "Steve Baars", destination_id = 14)
-    r5=Review(rating = 7, comment = "Wonderful Experience", user_name = "Godfrey Makeri", destination_id = 12)
-    r6=Review(rating = 5, comment = "Delicious Food", user_name = "Abdullahi Abdikhadir", destination_id = 8)
+    r1=Review(rating = 5, comment = "Incredible Views", title = "My Lake Bled Trip", destination_id = 6, visit_date = "12/01/2024")
+    r2=Review(rating = 1, comment = "Beautiful Skies", title = "Salar de Uyuni skies", destination_id = 10,visit_date = "11/02/2024")
+    r3=Review(rating = 4, comment = "Great Hiking Experience", title = "Masungi Days", destination_id = 3, visit_date = "25/02/2025")
+    r4=Review(rating = 3, comment = "Amazing Beaches", title = "South African Tour", destination_id = 14, visit_date = "26/02/2025")
+    r5=Review(rating = 3, comment = "Wonderful Experience", title = "Azore Islands", destination_id = 12,visit_date = "31/08/2023")
+    r6=Review(rating = 2, comment = "Delicious Food", title = "Cherry Blossoms day", destination_id = 8,visit_date = "12/07/2024")
 
     da1=DestinationActivity(destination_id = 1, activity_id = 1, duration_minutes = 300)
     da2=DestinationActivity(destination_id = 2,activity_id = 7, duration_minutes = 180)

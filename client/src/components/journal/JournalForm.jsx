@@ -100,10 +100,12 @@ const RatingContainer = styled.div`
   gap: 0.5rem;
 `;
 
-const RatingButton = styled.button`
-  background-color: ${props => props.selected ? '#2e7d32' : 'white'};
-  color: ${props => props.selected ? 'white' : '#333'};
-  border: 1px solid ${props => props.selected ? '#2e7d32' : '#ced4da'};
+const RatingButton = styled.button.attrs(({ $selected }) => ({
+  selected: $selected ? 'true' : undefined
+}))`
+  background-color: ${props => props.$selected ? '#2e7d32' : 'white'};
+  color: ${props => props.$selected ? 'white' : '#333'};
+  border: 1px solid ${props => props.$selected ? '#2e7d32' : '#ced4da'};
   border-radius: 4px;
   width: 40px;
   height: 40px;
@@ -125,16 +127,10 @@ const validationSchema = Yup.object({
     .min(5, 'Title must be at least 5 characters')
     .max(100, 'Title must be less than 100 characters'),
   content: Yup.string()
-    .required('Please share your experience')
-    .test('not-empty', 'Please share your experience', value => {
-      console.log('--- VALIDATION DEBUG ---');
-      console.log('Input value:', JSON.stringify(value));
-      console.log('Type:', typeof value);
-      const isValid = value && value.trim().length > 0;
-      console.log('Is valid:', isValid);
-      return isValid;
-    })
-    .max(1000, 'Content must be less than 1000 characters'),
+  .required('Please share your experience')
+  .trim()
+  .min(1, 'Please share your experience')
+  .max(1000, 'Content must be less than 1000 characters'),
   rating: Yup.number()
     .required('Please select a rating')
     .min(1, 'Rating must be at least 1')
@@ -147,11 +143,17 @@ const validationSchema = Yup.object({
     .max(500, 'Tips must be less than 500 characters'),
 });
 
-const JournalForm = ({ destinationId, destinationName }) => {
-  const { addJournal, isAuthenticated } = useAppContext();
+const JournalForm = ({ destinationId, destinationName, journalEntry, isEditMode = false, onCancelEdit }) => {
+  const { addJournal, updateJournal, isAuthenticated } = useAppContext();
   const [submitted, setSubmitted] = useState(false);
 
-  const initialValues = {
+  const initialValues = isEditMode ? {
+    title: journalEntry?.title || '',
+    content: journalEntry?.content || '',
+    rating: journalEntry?.rating || 0,
+    visitDate: journalEntry?.visitDate ? journalEntry.visitDate.split('T')[0] : '',
+    sustainabilityTips: journalEntry?.sustainabilityTips || '',
+  } : {
     title: '',
     content: '',
     rating: 0,
@@ -161,28 +163,43 @@ const JournalForm = ({ destinationId, destinationName }) => {
 
   const handleSubmit = (values, { resetForm }) => {
     console.log('Form values:', values); // Debug log
-    console.log('Content length:', values.content.length); // Debug log
     
-    // Create journal entry with destination info
-    const journalEntry = {
+    const journalData = {
       ...values,
       destinationId,
       destinationName,
-      createdAt: new Date().toISOString(),
+      createdAt: isEditMode ? journalEntry.createdAt : new Date().toISOString(),
     };
 
-    console.log('Journal entry:', journalEntry); // Debug log
-    // Add journal entry to context
-    addJournal(journalEntry);
+    if (isEditMode) {
+      console.group('Journal Update Debug');
+      console.log('Journal ID:', journalEntry.id);
+      console.log('Current Journals:', journals); // From context
+      console.log('Update Data:', journalData);
+        try {
+          console.log('Calling updateJournal...');
+          const updatedEntry = updateJournal(journalEntry.id, journalData);
+          console.log('updateJournal returned:', updatedEntry);
+      } catch (error) {
+        console.error('Update failed:', error);
+      }
+      console.groupEnd();
+    } else {
+      console.log('Adding new journal:', journalData);
+      addJournal(journalData);
+    }
 
     // Reset form and show success message
     resetForm();
     setSubmitted(true);
 
-    // Hide success message after 5 seconds
+    // Hide success message after 7 seconds
     setTimeout(() => {
       setSubmitted(false);
-    }, 5000);
+      if (isEditMode && onCancelEdit) {
+        onCancelEdit();
+      }
+    }, 7000);
   };
 
   return (
@@ -224,7 +241,7 @@ const JournalForm = ({ destinationId, destinationName }) => {
                   <RatingButton
                     key={star}
                     type="button"
-                    selected={values.rating >= star}
+                  $selected={values.rating >= star}
                     onClick={() => setFieldValue('rating', star)}
                   >
                     {star}
@@ -251,9 +268,27 @@ const JournalForm = ({ destinationId, destinationName }) => {
               <ErrorMessage name="sustainabilityTips" component={ErrorText} />
             </FormGroup>
 
-            <SubmitButton type="submit" disabled={isSubmitting || !isAuthenticated}>
-              {isAuthenticated ? 'Submit Journal Entry' : 'Login to Submit'}
-            </SubmitButton>
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <SubmitButton type="submit" disabled={isSubmitting || !isAuthenticated}>
+                {isAuthenticated ? (isEditMode ? 'Update Journal' : 'Submit Journal Entry') : 'Login to Submit'}
+              </SubmitButton>
+              {isEditMode && (
+                <button 
+                  type="button" 
+                  onClick={onCancelEdit}
+                  style={{
+                    background: 'transparent',
+                    color: '#dc3545',
+                    border: '1px solid #dc3545',
+                    borderRadius: '4px',
+                    padding: '0.75rem 1.5rem',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Cancel
+                </button>
+              )}
+            </div>
 
             {!isAuthenticated && (
               <ErrorText style={{ marginTop: '1rem' }}>
