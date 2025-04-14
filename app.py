@@ -54,7 +54,7 @@ class Reviews(Resource):
             comment = data['comment'],
             title = data['title'],
             visit_date = data['visit_date'],
-            sustainability_tips = data['sustainability_tips']
+            sustainability_tips = data['sustainability_tips'],
             destination_id = data['destination_id']
         )
         db.session.add(new_review)
